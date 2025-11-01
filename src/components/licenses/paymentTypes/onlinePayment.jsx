@@ -63,11 +63,11 @@ const OnlinePayment = ({
 
   const [flip, setFlip] = useState(false);
   const [cardData, setCardData] = useState({
-    userName: "", // "PAYTR TEST",
-    cardNumber: "", // "4355 0843 5508 4358",
-    month: "", // "12",
-    year: "", // "24",
-    cvv: "", // "000",
+    userName: "PAYTR TEST",
+    cardNumber: "4355 0843 5508 4358",
+    month: "12",
+    year: "24",
+    cvv: "000",
   });
 
   function handleSubmit(e) {
@@ -76,7 +76,7 @@ const OnlinePayment = ({
 
     const { userName, cardNumber, month, year, cvv } = cardData;
     const { email, fullName, phoneNumber, id } = userData;
-    const address = `${userInvData.city}/${userInvData.district}/${userInvData.neighbourhood}`;
+    const address = `${userData.city}/${userData.district}/${userInvData?.neighbourhood}`;
 
     const paymentAmount = cartItems.reduce(
       (acc, item) => acc + parseFloat(item.price),

@@ -539,7 +539,7 @@ function AddRestaurantPopup({ onSuccess, userId }) {
                 value={document}
                 onChange={setDocument}
                 accept={"image/png, image/jpeg"}
-                required
+                required={!document}
               />
             </div>
 

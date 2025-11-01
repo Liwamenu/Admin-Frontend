@@ -19,8 +19,8 @@ import {
   resetVerifyCodeState,
 } from "../../redux/auth/verifyCodeSlice";
 import {
-  resetUserVerification,
-  sendUserVerificationCode,
+  resetSendVerification,
+  sendVerificationCode,
 } from "../../redux/auth/userVerificationSlice";
 
 const VerifyCode = ({
@@ -40,7 +40,7 @@ const VerifyCode = ({
     success: sendSuccess,
     loading: sendLoading,
     error: sendError,
-  } = useSelector((state) => state.auth.verifyUser);
+  } = useSelector((state) => state.auth.sendVerification);
 
   const { success: sendForgotSucc } = useSelector(
     (state) => state.auth.forgotPassword
@@ -71,7 +71,7 @@ const VerifyCode = ({
       reSend(e);
       return;
     }
-    dispatch(sendUserVerificationCode({ phoneNumber: phoneNumberOrEmail }));
+    dispatch(sendVerificationCode({ phoneNumber: phoneNumberOrEmail }));
   }
 
   // TOAST AND ACTION FOR VERIFY CODE
@@ -98,12 +98,12 @@ const VerifyCode = ({
       toast.dismiss();
       setMinutes(2);
       toast.success("Onay Kodu Gönderildi");
-      dispatch(resetUserVerification());
+      dispatch(resetSendVerification());
     }
     if (sendError) {
       toast.dismiss();
       toast.error(sendError.message);
-      dispatch(resetUserVerification());
+      dispatch(resetSendVerification());
     }
   }, [sendSuccess, sendLoading, sendError]);
 

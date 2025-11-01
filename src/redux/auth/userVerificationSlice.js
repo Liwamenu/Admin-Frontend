@@ -14,7 +14,7 @@ const userVerificationSlice = createSlice({
   name: "userVerification",
   initialState: initialState,
   reducers: {
-    resetUserVerification: (state) => {
+    resetSendVerification: (state) => {
       state.loading = false;
       state.success = false;
       state.error = null;
@@ -22,18 +22,18 @@ const userVerificationSlice = createSlice({
   },
   extraReducers: (build) => {
     build
-      .addCase(sendUserVerificationCode.pending, (state) => {
+      .addCase(sendVerificationCode.pending, (state) => {
         state.loading = true;
         state.success = false;
         state.error = null;
         state.sessionId = null;
       })
-      .addCase(sendUserVerificationCode.fulfilled, (state) => {
+      .addCase(sendVerificationCode.fulfilled, (state) => {
         state.loading = false;
         state.success = true;
         state.error = null;
       })
-      .addCase(sendUserVerificationCode.rejected, (state, action) => {
+      .addCase(sendVerificationCode.rejected, (state, action) => {
         state.loading = false;
         state.success = false;
         state.error = action.payload;
@@ -41,7 +41,7 @@ const userVerificationSlice = createSlice({
   },
 });
 
-export const sendUserVerificationCode = createAsyncThunk(
+export const sendVerificationCode = createAsyncThunk(
   "Auth/verifyUser",
   async ({ email }, { rejectWithValue }) => {
     try {
@@ -72,5 +72,5 @@ export const sendUserVerificationCode = createAsyncThunk(
   }
 );
 
-export const { resetUserVerification } = userVerificationSlice.actions;
+export const { resetSendVerification } = userVerificationSlice.actions;
 export default userVerificationSlice.reducer;

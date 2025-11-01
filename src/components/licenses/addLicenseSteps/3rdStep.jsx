@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 // COMP
 import BackButton from "../stepsAssets/backButton";
-import InvoiceData from "../stepsAssets/invoiceData";
+// import InvoiceData from "../stepsAssets/invoiceData";
 import ForwardButton from "../stepsAssets/forwardButton";
 import { resetGetUser } from "../../../redux/users/getUserByIdSlice";
 
@@ -107,7 +107,7 @@ const ThirdStep = ({
         </div>
       </div>
 
-      <div className="w-full">
+      {/* <div className="w-full">
         {selectedUserData && (
           <InvoiceData
             user={selectedUserData}
@@ -122,7 +122,7 @@ const ThirdStep = ({
             }}
           />
         )}
-      </div>
+      </div> */}
 
       {/* BTNS */}
       <div className="flex gap-3 absolute -bottom-16 -right-0 h-12">

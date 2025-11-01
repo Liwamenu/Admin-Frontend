@@ -44,7 +44,7 @@ export const addByOnlinePay = createAsyncThunk(
   "Licenses/PayTR/AddLicenseByPayWithAdmin",
   async (data, { rejectWithValue }) => {
     try {
-      const res = await api.post(`${baseURL}PayTR/AddLicenseByPayWithAdmin`, {
+      const res = await api.post(`${baseURL}PayTR/add-license`, {
         ...data,
       });
 
