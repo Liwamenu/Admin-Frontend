@@ -93,3 +93,4 @@ Check package.json. Typical scripts:
 - Add Dockerfile + docker-compose for local multi-service dev (API + admin + user).
 - Add CI (GitHub Actions) to lint/build on push.
 - Generate Postman or OpenAPI client from backend controllers.
+  //
