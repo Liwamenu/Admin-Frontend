@@ -19,7 +19,7 @@ import LicensePackages from "./licensePackages";
 // import Messages from "./messages";
 // import Templates from "./templates";
 // import Accounts from "./accounts";
-// import Payments from "./payments";
+import Payments from "./payments";
 // import MailWaiters from "./mailWaiters";
 // import Roles from "./roles";
 // import Managers from "./managers";
@@ -36,6 +36,7 @@ const Home = () => {
         <Route path="/restaurants/*" element={<Restourants />} />
         <Route path="/licenses/*" element={<Licenses />} />
         <Route path="/license-packages/*" element={<LicensePackages />} />
+        <Route path="/payments/*" element={<Payments />} />
         {/*
         <Route path="/*" element={<DashboardPage />} />
         <Route path="/dashboard/*" element={<DashboardPage />} />
@@ -43,7 +44,6 @@ const Home = () => {
         <Route path="/accounts/*" element={<Accounts />} />
         <Route path="/parameters/*" element={<Parameters />} />
         <Route path="/profile/*" element={<Profile />} />
-        <Route path="/payments/*" element={<Payments />} />
         <Route path="/messages/*" element={<Messages />} />
         <Route path="/templates/*" element={<Templates />} />
         <Route path="/ys-mail-waiters" element={<MailWaiters />} />

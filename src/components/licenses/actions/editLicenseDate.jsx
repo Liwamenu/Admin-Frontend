@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ActionButton from "../../common/actionButton";
 import { CancelI, EditI } from "../../../assets/icon";
 import { usePopup } from "../../../context/PopupContext";
-import CustomDatePicker from "../../common/_customDatePicker";
+import CustomDatePicker from "../../common/customDatePicker";
 
 //REDUX
 import {
