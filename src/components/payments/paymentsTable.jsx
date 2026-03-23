@@ -1,8 +1,13 @@
 import Actions from "./actions/actions";
 import paymentType from "../../enums/paymentLicenseType";
-import { copyToClipboard, formatDateString } from "../../utils/utils";
+import {
+  copyToClipboard,
+  formatDateString,
+  formatToPrice,
+} from "../../utils/utils";
 import ChangePaymentStatus from "./actions/changePaymentStatus";
 import { CopyI } from "../../assets/icon";
+import PaymentMethod from "../../enums/paymentMethods";
 
 const PaymentsTable = ({ payments, itemsPerPage, onSuccess }) => {
   //filter the file path
@@ -30,6 +35,7 @@ const PaymentsTable = ({ payments, itemsPerPage, onSuccess }) => {
   const paymentLink = (data) => {
     return data?.description?.split("-")[1];
   };
+  // console.log(payments);
 
   return (
     <main className="max-xl:overflow-x-scroll">
@@ -38,12 +44,11 @@ const PaymentsTable = ({ payments, itemsPerPage, onSuccess }) => {
           <thead>
             <tr className="bg-[--light-3] h-8 text-left text-[--black-1] whitespace-nowrap">
               <th className="pl-4 font-normal">Kullanıcı Adı</th>
+              <th className="font-normal">İletişim</th>
               <th className="font-normal">Ödeme Tipi</th>
-              <th className="font-normal">Sağlayıcı</th>
               <th className="font-normal">Tutar</th>
               <th className="font-normal">Tarih</th>
               <th className="font-normal">Sip.No</th>
-              <th className="font-normal">Açıklama</th>
               <th className="font-normal">Durum</th>
               <th className="font-normal text-center">İşlem</th>
             </tr>
@@ -60,9 +65,27 @@ const PaymentsTable = ({ payments, itemsPerPage, onSuccess }) => {
                 <td className="whitespace-nowrap text-[--black-2] pl-4">
                   {data.userName}
                 </td>
-                <td className="whitespace-nowrap text-[--black-2] font-light">
-                  {paymentType[data.type]?.tr}
+                <td className="whitespace-nowrap text-[--black-2]">
+                  <p className="flex flex-col text-xs gap-1">
+                    <span
+                      className="cursor-pointer hover:text-[--primary-1]"
+                      onClick={() =>
+                        copyToClipboard({ text: data.customerEmail })
+                      }
+                    >
+                      {data.customerEmail}
+                    </span>
+                    <span
+                      className="cursor-pointer hover:text-[--primary-1]"
+                      onClick={() =>
+                        copyToClipboard({ text: data.customerPhone })
+                      }
+                    >
+                      {data.customerPhone}
+                    </span>
+                  </p>
                 </td>
+
                 <td className="whitespace-nowrap text-[--black-2] font-light">
                   <a
                     href={formatFilePath(data.receiptFilePath)}
@@ -73,11 +96,14 @@ const PaymentsTable = ({ payments, itemsPerPage, onSuccess }) => {
                         : "pointer-events-none"
                     }`}
                   >
-                    {data.provider}
+                    {PaymentMethod.find(
+                      (method) => method.value === data.paymentMethod,
+                    )?.label || data.paymentMethod}
                   </a>
                 </td>
+
                 <td className="whitespace-nowrap text-[--black-2] font-light">
-                  {data.amount}
+                  {formatToPrice(data.amount) || "0.00"}
                 </td>
                 <td className="whitespace-nowrap text-[--black-2]">
                   <span>
@@ -97,23 +123,7 @@ const PaymentsTable = ({ payments, itemsPerPage, onSuccess }) => {
                 <td className="whitespace-nowrap text-[--black-2] font-light">
                   {data.orderNumber}
                 </td>
-                <td
-                  className={`whitespace-nowrap font-light ${
-                    data.type == 3
-                      ? "text-[--link-1] cursor-pointer"
-                      : "text-[--black-2]"
-                  }`}
-                >
-                  <div
-                    className="flex items-center"
-                    disabled={data.type != 3}
-                    onClick={() => copyToClipboard({ text: paymentLink(data) })}
-                  >
-                    {data?.description?.slice(0, 20)}
-                    {data?.description?.length > 20 && "..."}
-                    {data.type == 3 && <CopyI className="size-[16px] mx-1" />}
-                  </div>
-                </td>
+
                 <td className="whitespace-nowrap text-[--black-2] font-light relative">
                   <ChangePaymentStatus
                     payment={{

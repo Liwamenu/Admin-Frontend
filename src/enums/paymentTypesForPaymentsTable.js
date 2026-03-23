@@ -1,4 +1,0 @@
-// CreditCard,
-// BankTransfer,
-// PayTR,
-// Free
