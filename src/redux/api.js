@@ -45,7 +45,7 @@ export const privateApi = () => {
     (error) => {
       console.log(error);
       return Promise.reject({ ...error });
-    }
+    },
   );
 
   axiosPrivate.interceptors.response.use(
@@ -96,7 +96,7 @@ export const privateApi = () => {
       }
 
       return Promise.reject({ ...error, message: errorMessage });
-    }
+    },
   );
 
   return axiosPrivate;

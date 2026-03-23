@@ -13,6 +13,8 @@ import CustomSelect from "../../common/customSelector";
 import paymentLicenseType from "../../../enums/paymentLicenseType";
 import statuses from "../../../enums/statuses";
 import { getUsers } from "../../../redux/users/getUsersSlice";
+import PaymentMethod from "../../../enums/paymentMethods";
+import CustomFileInput from "../../common/customFileInput";
 
 const AddPayment = ({ onSuccess }) => {
   const { setPopupContent } = usePopup();
@@ -45,20 +47,31 @@ function AddPaymentPopup({ onSuccess }) {
     user: { label: "Kullanıcı Seç" },
     amount: "",
     basket: "",
-    orderNumber: "",
     paymentType: "",
-    type: 0,
-    unFormattedType: { label: "Ödeme type seç" },
-    description: "",
+    licenseType: "",
+    unFormattedPaymentType: { label: "Ödeme tipi seç" },
+    unFormattedLicenseType: { label: "Lisans tipi seç" },
     status: "",
     unFormattedStatus: { label: "Durum Seç" },
-    receiptFilePath: "",
+    document: null,
     unFormattedTotalPrice: "",
   });
+  const isBankTransfer = paymentData.paymentType === "BankTransfer";
 
   function handleSubmit(e) {
     e.preventDefault();
-    dispatch(addPayment(paymentData));
+    const { userId, amount, paymentType, licenseType, status, document } =
+      paymentData;
+    dispatch(
+      addPayment({
+        userId,
+        amount,
+        paymentType,
+        licenseType,
+        status,
+        document,
+      }),
+    );
   }
 
   //LINK TOAST
@@ -130,18 +143,18 @@ function AddPaymentPopup({ onSuccess }) {
                   <div>
                     <CustomSelect
                       required
-                      label="Type"
+                      label="Lisans Tipi"
                       style={{ padding: "0px" }}
                       className2="mt-[0] sm:mt-[0]"
                       className="mt-[0] sm:mt-[0] text-sm"
-                      value={paymentData.unFormattedType}
+                      value={paymentData.unFormattedLicenseType}
                       options={paymentLicenseType}
                       onChange={(e) =>
                         setPaymentData((prev) => {
                           return {
                             ...prev,
-                            unFormattedType: e,
-                            type: e.id,
+                            unFormattedLicenseType: e,
+                            licenseType: e.value,
                           };
                         })
                       }
@@ -150,6 +163,27 @@ function AddPaymentPopup({ onSuccess }) {
                 </div>
 
                 <div className="flex flex-col gap-3">
+                  <div>
+                    <CustomSelect
+                      required
+                      label="Ödeme Tipi"
+                      style={{ padding: "0px" }}
+                      className2="mt-[0] sm:mt-[0]"
+                      className="mt-[0] sm:mt-[0] text-sm"
+                      value={paymentData.unFormattedPaymentType}
+                      options={PaymentMethod}
+                      onChange={(e) =>
+                        setPaymentData((prev) => {
+                          return {
+                            ...prev,
+                            unFormattedPaymentType: e,
+                            paymentType: e.value,
+                            document: null,
+                          };
+                        })
+                      }
+                    />
+                  </div>
                   <div>
                     <CustomSelect
                       required
@@ -164,25 +198,7 @@ function AddPaymentPopup({ onSuccess }) {
                           return {
                             ...prev,
                             unFormattedStatus: e,
-                            status: e.id,
-                          };
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <CustomInput
-                      required
-                      type="text"
-                      label="Basket"
-                      className="mt-[0] sm:mt-[0] text-sm py-[8px]"
-                      className2="mt-[0] sm:mt-[0]"
-                      value={paymentData.basket}
-                      onChange={(e) =>
-                        setPaymentData((prev) => {
-                          return {
-                            ...prev,
-                            basket: e,
+                            status: e.value,
                           };
                         })
                       }
@@ -191,25 +207,6 @@ function AddPaymentPopup({ onSuccess }) {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <div>
-                    <CustomInput
-                      required
-                      type="text"
-                      label="Ödeme Tipi"
-                      className="mt-[0] sm:mt-[0] text-sm py-[8px]"
-                      className2="mt-[0] sm:mt-[0]"
-                      value={paymentData.paymentType}
-                      onChange={(e) =>
-                        setPaymentData((prev) => {
-                          return {
-                            ...prev,
-                            paymentType: e,
-                          };
-                        })
-                      }
-                    />
-                  </div>
-
                   <div>
                     <CustomInput
                       required
@@ -231,62 +228,24 @@ function AddPaymentPopup({ onSuccess }) {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3">
-                  <div>
-                    <CustomInput
-                      type="text"
-                      label="Açıklama (Opsiyonel)"
-                      className="mt-[0] sm:mt-[0] text-sm py-[8px]"
-                      className2="mt-[0] sm:mt-[0]"
-                      value={paymentData.description}
-                      onChange={(e) =>
+                {isBankTransfer && (
+                  <div className="flex flex-col gap-3">
+                    <CustomFileInput
+                      className="h-[8rem] p-4"
+                      value={paymentData.document}
+                      onChange={(file) =>
                         setPaymentData((prev) => {
                           return {
                             ...prev,
-                            description: e,
+                            document: file,
                           };
                         })
                       }
+                      accept={"image/png, image/jpeg, application/pdf"}
+                      required={false}
                     />
                   </div>
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <div>
-                    <CustomInput
-                      type="text"
-                      label="Order Number (Opsiyonel)"
-                      className="mt-[0] sm:mt-[0] text-sm py-[8px]"
-                      className2="mt-[0] sm:mt-[0]"
-                      value={paymentData.orderNumber}
-                      onChange={(e) =>
-                        setPaymentData((prev) => {
-                          return {
-                            ...prev,
-                            orderNumber: e,
-                          };
-                        })
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    <CustomInput
-                      label="Dokuman URL (Opsiyonel)"
-                      className="mt-[0] sm:mt-[0] text-sm py-[8px]"
-                      className2="mt-[0] sm:mt-[0]"
-                      value={paymentData.receiptFilePath}
-                      onChange={(e) =>
-                        setPaymentData((prev) => {
-                          return {
-                            ...prev,
-                            receiptFilePath: e,
-                          };
-                        })
-                      }
-                    />
-                  </div>
-                </div>
+                )}
 
                 <div className="w-full flex gap-2 justify-end pt-6">
                   <button

@@ -49,8 +49,18 @@ export const addPayment = createAsyncThunk(
   "Payments/AddPayment",
   async (data, { rejectWithValue }) => {
     try {
-      const res = await api.post(`${baseURL}Payments/AddPayment`, data, {
-        params: data,
+      const formData = new FormData();
+
+      Object.entries(data || {}).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          formData.append(key, value);
+        }
+      });
+
+      const res = await api.post(`${baseURL}Payments/AddPayment`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       // console.log(res.data);
