@@ -16,6 +16,7 @@ import { usePopup } from "../../../context/PopupContext";
 
 //REDUX
 import { getPayments } from "../../../redux/payments/getPaymentsSlice";
+import PaymentMethod from "../../../enums/paymentMethods";
 
 const FilterPayments = ({
   filter,
@@ -45,6 +46,7 @@ const FilterPayments = ({
           : null,
         status: filter?.statusId,
         type: filter?.typeId,
+        paymentMethod: filter?.paymentMethodId,
       };
       dispatch(getPayments(filterData));
     } else {
@@ -156,7 +158,7 @@ const FilterPayments = ({
                   setFilter((prev) => {
                     return {
                       ...prev,
-                      statusId: selectedOption.id,
+                      statusId: selectedOption.value,
                       status: selectedOption,
                     };
                   });
@@ -177,8 +179,31 @@ const FilterPayments = ({
                   setFilter((prev) => {
                     return {
                       ...prev,
-                      typeId: selectedOption.id,
+                      typeId: selectedOption.value,
                       type: selectedOption,
+                    };
+                  });
+                }}
+              />
+            </div>
+
+            <div className="flex gap-6">
+              <CustomSelect
+                label="Ödeme Yöntemi"
+                className="text-sm sm:mt-1"
+                className2="sm:mt-3"
+                style={{ padding: "0 !important" }}
+                options={[
+                  { value: null, label: "Hepsi", id: null },
+                  ...PaymentMethod,
+                ]}
+                value={filter?.paymentMethod || { label: "Hepsi" }}
+                onChange={(selectedOption) => {
+                  setFilter((prev) => {
+                    return {
+                      ...prev,
+                      paymentMethodId: selectedOption.value,
+                      paymentMethod: selectedOption,
                     };
                   });
                 }}

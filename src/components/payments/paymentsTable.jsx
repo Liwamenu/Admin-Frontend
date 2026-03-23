@@ -1,5 +1,4 @@
 import Actions from "./actions/actions";
-import paymentType from "../../enums/paymentLicenseType";
 import {
   copyToClipboard,
   formatDateString,
@@ -8,6 +7,7 @@ import {
 import ChangePaymentStatus from "./actions/changePaymentStatus";
 import { CopyI } from "../../assets/icon";
 import PaymentMethod from "../../enums/paymentMethods";
+import paymentLicenseType from "../../enums/paymentLicenseType";
 
 const PaymentsTable = ({ payments, itemsPerPage, onSuccess }) => {
   //filter the file path
@@ -46,6 +46,7 @@ const PaymentsTable = ({ payments, itemsPerPage, onSuccess }) => {
               <th className="pl-4 font-normal">Kullanıcı Adı</th>
               <th className="font-normal">İletişim</th>
               <th className="font-normal">Ödeme Tipi</th>
+              <th className="font-normal">Lisans Tipi</th>
               <th className="font-normal">Tutar</th>
               <th className="font-normal">Tarih</th>
               <th className="font-normal">Sip.No</th>
@@ -103,21 +104,17 @@ const PaymentsTable = ({ payments, itemsPerPage, onSuccess }) => {
                 </td>
 
                 <td className="whitespace-nowrap text-[--black-2] font-light">
+                  {paymentLicenseType.find(
+                    (method) => method.value === data.licenseType,
+                  )?.label || data.licenseType}
+                </td>
+
+                <td className="whitespace-nowrap text-[--black-2] font-light">
                   {formatToPrice(data.amount) || "0.00"}
                 </td>
                 <td className="whitespace-nowrap text-[--black-2]">
                   <span>
                     {formatDateString({ dateString: data.createdDateTime })}
-                  </span>
-                  <span>
-                    {formatDateString({
-                      dateString: data.createdDateTime,
-                      letDay: false,
-                      letMonth: false,
-                      letYear: false,
-                      hour: true,
-                      minute: true,
-                    })}
                   </span>
                 </td>
                 <td className="whitespace-nowrap text-[--black-2] font-light">

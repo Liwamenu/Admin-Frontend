@@ -12,7 +12,7 @@ const TakePayment = ({ onSuccess }) => {
         setPopupContent(<TakePaymentPopup data={null} onSuccess={onSuccess} />);
       }}
     >
-      Ödeme Al
+      Ödeme Linki Oluştur
     </button>
   );
 };

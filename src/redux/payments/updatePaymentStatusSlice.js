@@ -51,10 +51,10 @@ export const updatePaymentStatus = createAsyncThunk(
     try {
       const res = await api.put(
         `${baseURL}Payments/UpdatePaymentStatus`,
-        {},
+        data,
         {
           params: { ...data },
-        }
+        },
       );
 
       // console.log(res.data);
@@ -66,7 +66,7 @@ export const updatePaymentStatus = createAsyncThunk(
       }
       return rejectWithValue({ message_TR: err.message });
     }
-  }
+  },
 );
 
 export const { resetUpdatePaymentStatus } = updatePaymentStatusSlice.actions;

@@ -50,7 +50,6 @@ function AddPaymentPopup({ onSuccess }) {
     type: 0,
     unFormattedType: { label: "Ödeme type seç" },
     description: "",
-    provider: "",
     status: "",
     unFormattedStatus: { label: "Durum Seç" },
     receiptFilePath: "",
@@ -245,25 +244,6 @@ function AddPaymentPopup({ onSuccess }) {
                           return {
                             ...prev,
                             description: e,
-                          };
-                        })
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    <CustomInput
-                      required
-                      type="text"
-                      label="Sağlayıcı"
-                      className="mt-[0] sm:mt-[0] text-sm py-[8px]"
-                      className2="mt-[0] sm:mt-[0]"
-                      value={paymentData.provider}
-                      onChange={(e) =>
-                        setPaymentData((prev) => {
-                          return {
-                            ...prev,
-                            provider: e,
                           };
                         })
                       }
