@@ -10,6 +10,7 @@ import Sidebar from "../components/sidebar/sidebar";
 import NotFound from "./404";
 import TestPage from "./test";
 import Users from "./users";
+import Roles from "./roles";
 // import DashboardPage from "./dashboard";
 import Restourants from "./restourants";
 import Licenses from "./licenses";
@@ -38,6 +39,7 @@ const Home = () => {
         <Route path="/license-packages/*" element={<LicensePackages />} />
         <Route path="/payments/*" element={<Payments />} />
         <Route path="/profile/*" element={<Profile />} />
+        <Route path="/roles/*" element={<Roles />} />
         {/*
         <Route path="/*" element={<DashboardPage />} />
         <Route path="/dashboard/*" element={<DashboardPage />} />
