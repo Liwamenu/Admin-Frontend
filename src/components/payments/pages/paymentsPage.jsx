@@ -17,12 +17,12 @@ import { formatDate } from "../../../utils/utils";
 import FilterPayments from "../components/filterPayments";
 import SearchPayment from "../components/searchPayment";
 import TakePayment from "../components/takePayment";
-import AddPayment from "../components/addPaymentLink";
+import AddPayment from "../components/addPayment";
 
 const PaymentsPage = () => {
   const dispatch = useDispatch();
   const { loading, success, error, payments } = useSelector(
-    (state) => state.payments.get
+    (state) => state.payments.get,
   );
 
   const [searchVal, setSearchVal] = useState("");

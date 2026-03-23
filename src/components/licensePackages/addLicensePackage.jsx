@@ -17,6 +17,7 @@ import {
   resetAddLicensePackage,
 } from "../../redux/licensePackages/addLicensePackageSlice";
 import TimeIds from "../../enums/licensePackagesTimeId";
+import LicensePackagesType from "../../enums/licensePackagesType";
 
 const AddLicensePackage = ({ onSuccess }) => {
   const params = useParams();
@@ -24,7 +25,7 @@ const AddLicensePackage = ({ onSuccess }) => {
   const { setPopupContent } = usePopup();
   const handleClick = () => {
     setPopupContent(
-      <AddLicensePackagePopup onSuccess={onSuccess} userId={userId} />
+      <AddLicensePackagePopup onSuccess={onSuccess} userId={userId} />,
     );
   };
 
@@ -51,7 +52,7 @@ function AddLicensePackagePopup({ onSuccess }) {
   const { setPopupContent } = usePopup();
 
   const { loading, success, error } = useSelector(
-    (state) => state.licensePackages.addLicensePackage
+    (state) => state.licensePackages.addLicensePackage,
   );
 
   const [licensePackagesData, setLicensePackagesData] = useState({
@@ -62,6 +63,7 @@ function AddLicensePackagePopup({ onSuccess }) {
     name: "",
     timeId: "",
     isActive: true,
+    licensePackageType: "QRLicensePackage",
   });
 
   const closeForm = () => {
@@ -72,10 +74,10 @@ function AddLicensePackagePopup({ onSuccess }) {
     e.preventDefault();
 
     const userValidPrice = parseFloat(
-      licensePackagesData.userPrice.replace(/\./g, "").replace(",", ".")
+      licensePackagesData.userPrice.replace(/\./g, "").replace(",", "."),
     );
     const dealerValidPrice = parseFloat(
-      licensePackagesData.dealerPrice.replace(/\./g, "").replace(",", ".")
+      licensePackagesData.dealerPrice.replace(/\./g, "").replace(",", "."),
     );
     console.log({
       ...licensePackagesData,
@@ -87,7 +89,7 @@ function AddLicensePackagePopup({ onSuccess }) {
         ...licensePackagesData,
         userPrice: userValidPrice,
         dealerPrice: dealerValidPrice,
-      })
+      }),
     );
   };
 
@@ -231,7 +233,7 @@ function AddLicensePackagePopup({ onSuccess }) {
               />
             </div>
 
-            <div className="flex max-sm:flex-col sm:gap-4 sm:w-1/2">
+            <div className="flex max-sm:flex-col sm:gap-4">
               <CustomSelect
                 type="Durum"
                 label="Durum"
@@ -249,6 +251,24 @@ function AddLicensePackagePopup({ onSuccess }) {
                     return {
                       ...prev,
                       isActive: selectedOption.value,
+                    };
+                  });
+                }}
+              />
+
+              <CustomSelect
+                type="Durum"
+                label="Durum"
+                value={LicensePackagesType.find(
+                  (option) =>
+                    option.value === licensePackagesData.licensePackageType,
+                )}
+                options={LicensePackagesType}
+                onChange={(selectedOption) => {
+                  setLicensePackagesData((prev) => {
+                    return {
+                      ...prev,
+                      licensePackageType: selectedOption.value,
                     };
                   });
                 }}
