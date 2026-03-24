@@ -16,14 +16,18 @@ import { usePopup } from "../../../context/PopupContext";
 import { PaymentLoader } from "../stepsAssets/paymentLoader";
 
 //REDUX
+// import {
+//   addByBankPay,
+//   resetAddByBankPay,
+// } from "../../../redux/licenses/addLicense/addByBankPaySlice";
+// import {
+//   extendByBankPay,
+//   resetExtendByBankPay,
+// } from "../../../redux/licenses/extendLicense/extendByBankPaySlice";
 import {
-  addByBankPay,
-  resetAddByBankPay,
-} from "../../../redux/licenses/addLicense/addByBankPaySlice";
-import {
-  extendByBankPay,
-  resetExtendByBankPay,
-} from "../../../redux/licenses/extendLicense/extendByBankPaySlice";
+  createFreeLicensePayment,
+  resetCreateFreeLicensePayment,
+} from "../../../redux/payments/createFreeLicensePaymentSlice";
 
 const WithOutPayment = ({
   user,
@@ -40,24 +44,28 @@ const WithOutPayment = ({
 
   const isPageExtend = actionType === "extend-license";
   const cartItems = useSelector((state) => state.cart.items);
-  const {
-    error: addError,
-    loading: addLoading,
-    success: addSuccess,
-  } = useSelector((state) => state.licenses.addByBank);
+  // const {
+  //   error: addError,
+  //   loading: addLoading,
+  //   success: addSuccess,
+  // } = useSelector((state) => state.licenses.addByBank);
 
-  const {
-    error: extendError,
-    loading: extendLoading,
-    success: extendSuccess,
-  } = useSelector((state) => state.licenses.extendByBank);
+  // const {
+  //   error: extendError,
+  //   loading: extendLoading,
+  //   success: extendSuccess,
+  // } = useSelector((state) => state.licenses.extendByBank);
+
+  const { loading, error, success } = useSelector(
+    (state) => state.payments.createFreeLicensePayment,
+  );
 
   const [licensePackagesData, setLicensePackagesData] = useState();
 
   function getTotalPrice() {
     const result = cartItems.reduce(
       (acc, item) => acc + parseFloat(item.price),
-      0
+      0,
     );
     // const kdv = cartItems.reduce(
     //   (acc, item) =>
@@ -74,16 +82,17 @@ const WithOutPayment = ({
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (addLoading || extendLoading) return;
+    // if (addLoading || extendLoading) return;
+    if (loading) return;
 
-    const paymentAmount = cartItems.reduce(
-      (acc, item) => acc + parseFloat(item.price),
-      // acc + parseFloat(getPriceWithKDV(item.price, item.kdvData)),
-      0
-    );
+    // const paymentAmount = cartItems.reduce(
+    //   (acc, item) => acc + parseFloat(item.price),
+    //   // acc + parseFloat(getPriceWithKDV(item.price, item.kdvData)),
+    //   0,
+    // );
     const addLicenseBasket = cartItems.reduce((result, item) => {
       const existingRestaurant = result.find(
-        (restaurant) => restaurant.restaurantId === item.restaurantId
+        (restaurant) => restaurant.restaurantId === item.restaurantId,
       );
 
       if (existingRestaurant) {
@@ -108,23 +117,26 @@ const WithOutPayment = ({
     // Create a FormData object
     const formData = new FormData();
     formData.append("UserId", user.id);
-    formData.append("UserName", user.fullName);
-    formData.append("UserEmail", user.email);
-    formData.append("UserPhoneNumber", user.phoneNumber);
-    formData.append("UserAddress", ``);
     formData.append(
-      "UserBasket",
+      "Basket",
       isPageExtend
         ? JSON.stringify(extendLicenseBasket)
-        : JSON.stringify(addLicenseBasket)
+        : JSON.stringify(addLicenseBasket),
     );
-    formData.append("PaymentType", "Free");
-    formData.append("PaymentAmount", paymentAmount.toString());
+    formData.append("Type", isPageExtend ? "ExtendLicense" : "NewLicense");
 
+    // formData.append("UserName", user.fullName);
+    // formData.append("UserEmail", user.email);
+    // formData.append("UserPhoneNumber", user.phoneNumber);
+    // formData.append("UserAddress", ``);
+    // formData.append("PaymentType", "Free");
+    // formData.append("PaymentAmount", paymentAmount.toString());
+
+    // I'm Leaving this page control here for future use, if we use different endpoint for add and extend license.
     if (isPageExtend) {
-      dispatch(extendByBankPay(formData));
+      dispatch(createFreeLicensePayment(formData));
     } else {
-      dispatch(addByBankPay(formData));
+      dispatch(createFreeLicensePayment(formData));
     }
   }
 
@@ -134,50 +146,74 @@ const WithOutPayment = ({
     }
   }, [cartItems]);
 
-  // ADD SUCCESS
   useEffect(() => {
-    if (addLoading) {
-      toastId.current = toast.loading("Loading...");
+    if (loading) {
+      toastId.current = toast.loading("Loading...", { id: "withOutPayment" });
     }
-    if (addSuccess) {
-      setStep(6);
+    if (success) {
+      if (isPageExtend) {
+        setStep(5);
+      } else {
+        setStep(6);
+      }
       toast.remove(toastId.current);
       setPaymentStatus("success");
-      dispatch(resetAddByBankPay());
+      dispatch(resetCreateFreeLicensePayment());
     }
-    if (addError) {
-      setStep(6);
+    if (error) {
+      setStep(5);
       toast.remove(toastId.current);
       setPaymentStatus("failure");
-      dispatch(resetAddByBankPay());
+      dispatch(resetCreateFreeLicensePayment());
     }
-  }, [addLoading, addSuccess, addError]);
+  }, [loading, success, error]);
 
-  // EXTEND SUCCESS
-  useEffect(() => {
-    if (extendLoading) {
-      toastId.current = toast.loading("Loading...");
-    }
-    if (extendSuccess) {
-      setStep(5);
-      toast.remove(toastId.current);
-      setPaymentStatus("success");
-      dispatch(resetExtendByBankPay());
-    }
-    if (extendError) {
-      setStep(5);
-      toast.remove(toastId.current);
-      setPaymentStatus("failure");
-      dispatch(resetExtendByBankPay());
-    }
-  }, [extendLoading, extendSuccess, extendError, dispatch]);
+  // // ADD SUCCESS
+  // useEffect(() => {
+  //   if (addLoading) {
+  //     toastId.current = toast.loading("Loading...", { id: "withOutPayment" });
+  //   }
+  //   if (addSuccess) {
+  //     setStep(6);
+  //     toast.remove(toastId.current);
+  //     setPaymentStatus("success");
+  //     dispatch(resetAddByBankPay());
+  //   }
+  //   if (addError) {
+  //     setStep(6);
+  //     toast.remove(toastId.current);
+  //     setPaymentStatus("failure");
+  //     dispatch(resetAddByBankPay());
+  //   }
+  // }, [addLoading, addSuccess, addError]);
+
+  // // EXTEND SUCCESS
+  // useEffect(() => {
+  //   if (extendLoading) {
+  //     toastId.current = toast.loading("Loading...", { id: "withOutPayment" });
+  //   }
+  //   if (extendSuccess) {
+  //     setStep(5);
+  //     toast.remove(toastId.current);
+  //     setPaymentStatus("success");
+  //     dispatch(resetExtendByBankPay());
+  //   }
+  //   if (extendError) {
+  //     setStep(5);
+  //     toast.remove(toastId.current);
+  //     setPaymentStatus("failure");
+  //     dispatch(resetExtendByBankPay());
+  //   }
+  // }, [extendLoading, extendSuccess, extendError, dispatch]);
 
   //LOADING ANIMATION
   useEffect(() => {
-    if (addLoading || extendLoading) {
+    // if (addLoading || extendLoading) {
+    if (loading) {
       setPopupContent(<PaymentLoader type={1} />);
     } else setPopupContent(null);
-  }, [addLoading, extendLoading]);
+    // }, [addLoading, extendLoading]);
+  }, [loading]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -277,13 +313,15 @@ const WithOutPayment = ({
           text="Geri"
           letIcon={true}
           onClick={() => setStep(step - 2)}
-          disabled={addLoading || extendLoading}
+          // disabled={addLoading || extendLoading}
+          disabled={loading}
         />
         <ForwardButton
           text={isPageExtend ? "Uzat" : "Ekle"}
           letIcon={true}
           type="submit"
-          disabled={addLoading || extendLoading}
+          // disabled={addLoading || extendLoading}
+          disabled={loading}
         />
       </div>
     </form>

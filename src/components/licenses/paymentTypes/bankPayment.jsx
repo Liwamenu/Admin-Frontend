@@ -25,6 +25,10 @@ import {
   extendByBankPay,
   resetExtendByBankPay,
 } from "../../../redux/licenses/extendLicense/extendByBankPaySlice";
+import {
+  createReceiptLicensePayment,
+  resetCreateReceiptLicensePayment,
+} from "../../../redux/payments/createReceiptLicensePaymentSlice";
 
 const BankPayment = ({
   step,
@@ -45,17 +49,21 @@ const BankPayment = ({
   const isPageExtend = actionType === "extend-license";
 
   const cartItems = useSelector((state) => state.cart.items);
-  const {
-    error: addError,
-    loading: addLoading,
-    success: addSuccess,
-  } = useSelector((state) => state.licenses.addByBank);
+  // const {
+  //   error: addError,
+  //   loading: addLoading,
+  //   success: addSuccess,
+  // } = useSelector((state) => state.licenses.addByBank);
 
-  const {
-    error: extendError,
-    loading: extendLoading,
-    success: extendSuccess,
-  } = useSelector((state) => state.licenses.extendByBank);
+  // const {
+  //   error: extendError,
+  //   loading: extendLoading,
+  //   success: extendSuccess,
+  // } = useSelector((state) => state.licenses.extendByBank);
+
+  const { error, loading, success } = useSelector(
+    (state) => state.payments.createReceiptLicensePayment,
+  );
 
   const [document, setDocument] = useState("");
   const [explanation, setExplanation] = useState("");
@@ -63,17 +71,18 @@ const BankPayment = ({
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (addLoading || extendLoading) return;
+    // if (addLoading || extendLoading) return;
+    if (loading) return;
 
-    const { city, district, neighbourhood } = userInvData;
+    // const { city, district, neighbourhood } = userInvData;
     const paymentAmount = cartItems.reduce(
       (acc, item) => acc + parseFloat(item.price),
       // acc + parseFloat(getPriceWithKDV(item.price, item.kdvData)),
-      0
+      0,
     );
     const addLicenseBasket = cartItems.reduce((result, item) => {
       const existingRestaurant = result.find(
-        (restaurant) => restaurant.restaurantId === item.restaurantId
+        (restaurant) => restaurant.restaurantId === item.restaurantId,
       );
 
       if (existingRestaurant) {
@@ -89,81 +98,110 @@ const BankPayment = ({
     }, []);
 
     const { licensePackageId, restaurantId } = cartItems[0];
-    const extendLicenseBasket = {
-      licensePackageId,
-      restaurantId,
-      licenseId: currentLicense?.id,
-    };
+    const extendLicenseBasket = [
+      {
+        licensePackageIds: [licensePackageId],
+        restaurantId,
+        licenseId: currentLicense?.id,
+      },
+    ];
 
     // Create a FormData object
     const formData = new FormData();
     formData.append("UserId", user.id);
-    formData.append("UserName", user.fullName);
-    formData.append("UserEmail", user.email);
-    formData.append("UserPhoneNumber", user.phoneNumber);
-    formData.append("UserAddress", `${city}/${district}/${neighbourhood}`);
     formData.append(
-      "UserBasket",
+      "Basket",
       isPageExtend
         ? JSON.stringify(extendLicenseBasket)
-        : JSON.stringify(addLicenseBasket)
+        : JSON.stringify(addLicenseBasket),
     );
-    formData.append("PaymentType", "Bank");
-    formData.append("PaymentAmount", paymentAmount.toString());
-    formData.append("Description", explanation);
+    formData.append("Type", isPageExtend ? "ExtendLicense" : "NewLicense");
     formData.append("Receipt", document);
 
+    // formData.append("UserName", user.fullName);
+    // formData.append("UserEmail", user.email);
+    // formData.append("UserPhoneNumber", user.phoneNumber);
+    // formData.append("UserAddress", `${city}/${district}/${neighbourhood}`);
+    // formData.append("PaymentType", "Bank");
+    // formData.append("PaymentAmount", paymentAmount.toString());
+    // formData.append("Description", explanation);
+
+    // I'M Still leaving this condition for future use if there will be any difference between add and extend form data. For now, both are same so I'm dispatching same action.
     if (isPageExtend) {
-      dispatch(extendByBankPay(formData));
+      dispatch(createReceiptLicensePayment(formData));
     } else {
-      dispatch(addByBankPay(formData));
+      dispatch(createReceiptLicensePayment(formData));
     }
   }
 
-  // ADD SUCCESS
   useEffect(() => {
-    if (addLoading) {
-      toastId.current = toast.loading("Loading...");
+    if (loading) {
+      toastId.current = toast.loading("Loading...", { id: "bankPayment" });
     }
-    if (addSuccess) {
-      setStep(6);
+    if (success) {
+      if (isPageExtend) {
+        setStep(5);
+      } else {
+        setStep(6);
+      }
       toast.remove(toastId.current);
       setPaymentStatus("success");
-      dispatch(resetAddByBankPay());
+      dispatch(resetCreateReceiptLicensePayment());
     }
-    if (addError) {
-      setStep(6);
+    if (error) {
+      setStep(5);
       toast.remove(toastId.current);
       setPaymentStatus("failure");
-      dispatch(resetAddByBankPay());
+      dispatch(resetCreateReceiptLicensePayment());
     }
-  }, [addLoading, addSuccess, addError]);
+  }, [loading, success, error]);
+
+  // ADD SUCCESS
+  // useEffect(() => {
+  //   if (addLoading) {
+  //     toastId.current = toast.loading("Loading...", { id: "bankPayment" });
+  //   }
+  //   if (addSuccess) {
+  //     setStep(6);
+  //     toast.remove(toastId.current);
+  //     setPaymentStatus("success");
+  //     dispatch(resetAddByBankPay());
+  //   }
+  //   if (addError) {
+  //     setStep(6);
+  //     toast.remove(toastId.current);
+  //     setPaymentStatus("failure");
+  //     dispatch(resetAddByBankPay());
+  //   }
+  // }, [addLoading, addSuccess, addError]);
 
   // EXTEND SUCCESS
-  useEffect(() => {
-    if (extendLoading) {
-      toastId.current = toast.loading("Loading...");
-    }
-    if (extendSuccess) {
-      setStep(5);
-      toast.remove(toastId.current);
-      setPaymentStatus("success");
-      dispatch(resetExtendByBankPay());
-    }
-    if (extendError) {
-      setStep(5);
-      toast.remove(toastId.current);
-      setPaymentStatus("failure");
-      dispatch(resetExtendByBankPay());
-    }
-  }, [extendLoading, extendSuccess, extendError, dispatch]);
+  // useEffect(() => {
+  //   if (extendLoading) {
+  //     toastId.current = toast.loading("Loading...", { id: "bankPayment" });
+  //   }
+  //   if (extendSuccess) {
+  //     setStep(5);
+  //     toast.remove(toastId.current);
+  //     setPaymentStatus("success");
+  //     dispatch(resetExtendByBankPay());
+  //   }
+  //   if (extendError) {
+  //     setStep(5);
+  //     toast.remove(toastId.current);
+  //     setPaymentStatus("failure");
+  //     dispatch(resetExtendByBankPay());
+  //   }
+  // }, [extendLoading, extendSuccess, extendError, dispatch]);
 
   //LOADING ANIMATION
   useEffect(() => {
-    if (addLoading || extendLoading) {
+    // if (addLoading || extendLoading || loading) {
+    if (loading) {
       setPopupContent(<PaymentLoader type={1} />);
     } else setPopupContent(null);
-  }, [addLoading, extendLoading]);
+    // }, [addLoading, extendLoading, loading]);
+  }, [loading]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -220,13 +258,15 @@ const BankPayment = ({
             text="Geri"
             letIcon={true}
             onClick={() => setStep(step - 1)}
-            disabled={addLoading || extendLoading}
+            // disabled={addLoading || extendLoading}
+            disabled={loading}
           />
           <ForwardButton
             text="Devam"
             letIcon={true}
             type="submit"
-            disabled={addLoading || extendLoading}
+            // disabled={addLoading || extendLoading}
+            disabled={loading}
           />
         </div>
       </div>

@@ -52,11 +52,11 @@ const OnlinePayment = ({
   } = useSelector((state) => state.licenses.extendByPay);
 
   const { loading: updateInvLoading } = useSelector(
-    (state) => state.users.updateInvoice
+    (state) => state.users.updateInvoice,
   );
 
   const { loading: addInvLoading } = useSelector(
-    (state) => state.users.addInvoice
+    (state) => state.users.addInvoice,
   );
 
   const cartItems = useSelector((state) => state.cart.items);
@@ -81,12 +81,12 @@ const OnlinePayment = ({
     const paymentAmount = cartItems.reduce(
       (acc, item) => acc + parseFloat(item.price),
       // acc + parseFloat(getPriceWithKDV(item.price, item.kdvData)),
-      0
+      0,
     );
 
     const addLicenseBasket = cartItems.reduce((result, item) => {
       const existingRestaurant = result.find(
-        (restaurant) => restaurant.restaurantId === item.restaurantId
+        (restaurant) => restaurant.restaurantId === item.restaurantId,
       );
 
       if (existingRestaurant) {
@@ -109,21 +109,22 @@ const OnlinePayment = ({
     };
 
     const data = {
-      userId: id,
-      userName: fullName,
-      userEmail: email,
-      userPhoneNumber: phoneNumber,
-      userAddress: address,
+      // userName: fullName,
+      // userEmail: email,
+      // userPhoneNumber: phoneNumber,
+      // paymentType: "card",
+      // paymentAmount,
+
+      userBasket: isPageExtend
+        ? JSON.stringify(extendLicenseBasket)
+        : JSON.stringify(addLicenseBasket),
       ccOwner: userName,
       cardNumber: cardNumber.replace(/\D/g, ""),
       expiryMonth: month,
       expiryYear: year,
       cvv,
-      userBasket: isPageExtend
-        ? JSON.stringify(extendLicenseBasket)
-        : JSON.stringify(addLicenseBasket),
-      paymentType: "card",
-      paymentAmount,
+      userAddress: address,
+      userId: id,
     };
 
     if (isPageExtend) {

@@ -51,29 +51,10 @@ const getRestaurantsSlice = createSlice({
 
 export const getRestaurants = createAsyncThunk(
   "Restaurants/getRestaurants",
-  async (
-    {
-      pageNumber = 0,
-      pageSize = 0,
-      searchKey = null,
-      active = null,
-      city = null,
-      district = null,
-      neighbourhood = null,
-    },
-    { rejectWithValue }
-  ) => {
+  async (data, { rejectWithValue }) => {
     try {
       const res = await api.get(`${baseURL}Restaurants/GetRestaurants`, {
-        params: {
-          pageNumber,
-          pageSize,
-          searchKey,
-          active,
-          city,
-          district,
-          neighbourhood,
-        },
+        params: data,
       });
 
       // console.log(res);
@@ -85,7 +66,7 @@ export const getRestaurants = createAsyncThunk(
       }
       return rejectWithValue({ message_TR: err.message });
     }
-  }
+  },
 );
 
 export const { resetGetRestaurantsState, resetGetRestaurants } =

@@ -42,14 +42,14 @@ const FirstStep = ({
   const dispatch = useDispatch();
 
   const { success, error, licensePackages } = useSelector(
-    (state) => state.licensePackages.getLicensePackages
+    (state) => state.licensePackages.getLicensePackages,
   );
   const { restaurants } = useSelector(
-    (state) => state.restaurants.getRestaurants
+    (state) => state.restaurants.getRestaurants,
   );
 
   const { restaurants: userRestaurants } = useSelector(
-    (state) => state.restaurants.getUserRestaurants
+    (state) => state.restaurants.getUserRestaurants,
   );
 
   // const { KDVParameters, error: kdvError } = useSelector(
@@ -67,11 +67,11 @@ const FirstStep = ({
   function getTotalPrice() {
     const result = cartItems.reduce(
       (acc, item) => acc + parseFloat(item.price),
-      0
+      0,
     );
     const kdv = cartItems.reduce(
       (acc, item) => acc + (parseFloat(item.price) / 100) * item.kdvPercentage,
-      0
+      0,
     );
     const kdvTotal = formatToPrice(kdv);
     const total = formatToPrice(result);
@@ -181,22 +181,22 @@ const FirstStep = ({
     }
     if (!licenses) return;
     const existingLicenses = licenses.filter(
-      (license) => license.restaurantId === pkg.restaurantId
+      (license) => license.restaurantId === pkg.restaurantId,
     );
     const marketPlaceExistes = existingLicenses.some(
-      (license) => license.licenseTypeId === pkg.licenseTypeId
+      (license) => license.licenseTypeId === pkg.licenseTypeId,
     );
     if (marketPlaceExistes) {
       toast(
         `${pkg.restaurantName} restoranına ${pkg.name} lisansı var. Uzatmak isterseniz uzatma sayfasından uzatabılırsınız.`,
-        { id: "first_step" }
+        { id: "first_step" },
       );
       return;
     }
     const existingPackage = cartItems.find(
       (item) =>
         item.licenseTypeId === pkg.licenseTypeId &&
-        item.restaurantId === pkg.restaurantId
+        item.restaurantId === pkg.restaurantId,
     );
 
     if (existingPackage) {
@@ -204,7 +204,7 @@ const FirstStep = ({
         removeItemFromCart({
           id: existingPackage.id,
           restaurantId: pkg.restaurantId,
-        })
+        }),
       );
       if (
         existingPackage.id === pkg.id &&
@@ -257,14 +257,14 @@ const FirstStep = ({
             licensePackagesData.map((licensePkg, i) => (
               <div
                 key={i}
-                className="flex max-sm:flex-col sm:items-center gap-2 sm:gap-8 max-sm:mb-6 even:bg-[--white-1] odd:bg-[--table-odd]"
+                className="flex max-sm:flex-col sm:items-center gap-2 sm:gap-8 even:bg-[--white-1] odd:bg-[--table-odd]"
               >
                 <div className="max-sm:w-full flex gap-4 py-1 overflow-x-auto">
                   {licensePkg.map((pkg) => {
                     const isSelected = cartItems.some(
                       (item) =>
                         item.id === pkg.id &&
-                        item.restaurantId === restaurantData?.id
+                        item.restaurantId === restaurantData?.id,
                     );
 
                     return (

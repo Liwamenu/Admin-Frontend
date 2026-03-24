@@ -1,5 +1,6 @@
 //
 // import { getPriceWithKDV } from "../../utils/utils";
+import LicensePackagesType from "../../enums/licensePackagesType";
 import LicensePackagesActions from "./actions/licensePackageActions";
 
 //COMP
@@ -18,6 +19,7 @@ const LicensePackagesTable = ({
           <div className="w-full">
             <div className="flex items-center justify-between bg-[--light-3] text-[--black-1] h-8 font-normal">
               <div className="w-40 text-center">Paket Adı</div>
+              <div className="w-40 text-center">Paket Türü</div>
               <div className="w-40 text-center">Lisans Süresi</div>
               <div className="w-44 text-center">Müşteri Fiyatı KDV Dahil</div>
               <div className="w-44 text-center">Bayi Fiyatı KDV Dahil</div>
@@ -39,8 +41,17 @@ const LicensePackagesTable = ({
                   {data.name}
                 </div>
                 <div className="w-36 text-[--black-2] flex items-center justify-center">
-                  {data.time} Yıllık
+                  {
+                    LicensePackagesType.find(
+                      (t) => t.value === data.licensePackageType,
+                    )?.label
+                  }
                 </div>
+
+                <div className="w-36 text-[--black-2] flex items-center justify-center">
+                  {data.time} {data.timeId == 1 ? "Yıllık" : "Aylık"}
+                </div>
+
                 <div className="w-44 text-[--black-2] flex items-center justify-center">
                   {data.userPrice}
                   {/* {kdvData?.useKDV

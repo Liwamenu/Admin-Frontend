@@ -1,5 +1,6 @@
 import toast from "react-hot-toast";
 // import licenseTypeIds from "../enums/licenseTypeIds";
+import LicensePackagesType from "../enums/licensePackagesType";
 
 export function formatDateString({
   dateString,
@@ -199,6 +200,32 @@ export const formatSelectorData = (
   return outData;
 };
 
+export const formatLicensePackagesToSelector = (data) => {
+  if (!Array.isArray(data) || data.length === 0) {
+    return [];
+  }
+
+  const sortedData = [...data].sort((a, b) =>
+    a.name.localeCompare(b.name, "tr"),
+  );
+
+  return sortedData.map((pkg) => {
+    return {
+      value: pkg.id,
+      label: `${pkg.name} - ${pkg.time} ${pkg.timeUnit}${pkg.time > 1 ? "s" : ""} (${pkg.price} ₺)`,
+      id: pkg.id,
+      licensePackageId: pkg.id,
+      price: pkg.price,
+      time: pkg.time,
+      timeId: pkg.timeId,
+      timeUnit: pkg.timeUnit,
+      description: pkg.description,
+      licensePackageType: pkg.licensePackageType,
+      licenseTypeId: pkg.licenseTypeId,
+    };
+  });
+};
+
 // export const formatLisansPackages = (data) => {
 //   if (!Array.isArray(data) || data.length === 0) {
 //     return [];
@@ -251,10 +278,22 @@ export function groupedLicensePackages(data, active = true) {
       return result;
     }
 
-    if (result[item.licenseTypeId]) {
-      result[item.licenseTypeId].push(item);
+    const matchedLicenseType = LicensePackagesType.find(
+      (type) => type.value === item.licensePackageType,
+    );
+
+    const resolvedLicenseTypeId =
+      matchedLicenseType?.id ?? item.licenseTypeId ?? item.licensePackageType;
+
+    const normalizedItem = {
+      ...item,
+      licenseTypeId: resolvedLicenseTypeId,
+    };
+
+    if (result[resolvedLicenseTypeId]) {
+      result[resolvedLicenseTypeId].push(normalizedItem);
     } else {
-      result[item.licenseTypeId] = [item];
+      result[resolvedLicenseTypeId] = [normalizedItem];
     }
 
     return result;

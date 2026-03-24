@@ -51,7 +51,7 @@ export const extendByBankPay = createAsyncThunk(
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       // console.log(res);
@@ -63,7 +63,7 @@ export const extendByBankPay = createAsyncThunk(
       }
       return rejectWithValue({ message_TR: err.message });
     }
-  }
+  },
 );
 
 export const { resetExtendByBankPay } = extendByBankPaySlice.actions;

@@ -257,8 +257,8 @@ function AddLicensePackagePopup({ onSuccess }) {
               />
 
               <CustomSelect
-                type="Durum"
-                label="Durum"
+                type="Lisans Türü"
+                label="Lisans Türü"
                 value={LicensePackagesType.find(
                   (option) =>
                     option.value === licensePackagesData.licensePackageType,

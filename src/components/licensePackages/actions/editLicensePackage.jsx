@@ -20,6 +20,7 @@ import {
 import { formatToPrice } from "../../../utils/utils";
 import TimeIds from "../../../enums/licensePackagesTimeId";
 import CustomSelect from "../../common/customSelector";
+import LicensePackagesType from "../../../enums/licensePackagesType";
 
 const EditLicensePackage = ({ licensePackage, onSuccess }) => {
   const { setPopupContent } = usePopup();
@@ -27,7 +28,7 @@ const EditLicensePackage = ({ licensePackage, onSuccess }) => {
   const handlePopup = (e) => {
     e.stopPropagation();
     setPopupContent(
-      <EditLicensePackagePopup data={licensePackage} onSuccess={onSuccess} />
+      <EditLicensePackagePopup data={licensePackage} onSuccess={onSuccess} />,
     );
   };
   return (
@@ -50,7 +51,7 @@ function EditLicensePackagePopup({ data, onSuccess }) {
   const { setPopupContent } = usePopup();
 
   const { loading, success, error } = useSelector(
-    (state) => state.licensePackages.updateLicensePackage
+    (state) => state.licensePackages.updateLicensePackage,
   );
 
   const initialData = {
@@ -63,6 +64,11 @@ function EditLicensePackagePopup({ data, onSuccess }) {
     name: data.name,
     timeId: data.timeId,
     isActive: data.isActive,
+    selectedTimeId: {
+      value: data.timeId,
+      label: data.timeId == 1 ? "Yıl" : "Ay",
+    },
+    licensePackageType: data.licensePackageType,
   };
 
   const [licensePackagesData, setLicensePackagesData] = useState(initialData);
@@ -75,11 +81,11 @@ function EditLicensePackagePopup({ data, onSuccess }) {
     }
 
     const userValidPrice = parseFloat(
-      licensePackagesData.userPrice.replace(/\./g, "").replace(",", ".")
+      licensePackagesData.userPrice.replace(/\./g, "").replace(",", "."),
     );
 
     const dealerValidPrice = parseFloat(
-      licensePackagesData.dealerPrice.replace(/\./g, "").replace(",", ".")
+      licensePackagesData.dealerPrice.replace(/\./g, "").replace(",", "."),
     );
 
     dispatch(
@@ -87,7 +93,7 @@ function EditLicensePackagePopup({ data, onSuccess }) {
         ...licensePackagesData,
         userPrice: userValidPrice,
         dealerPrice: dealerValidPrice,
-      })
+      }),
     );
   };
 
@@ -213,12 +219,7 @@ function EditLicensePackagePopup({ data, onSuccess }) {
               <CustomSelect
                 type="Zaman Tipi"
                 label="Zaman Tipi"
-                value={
-                  licensePackagesData.selectedTimeId || {
-                    value: 0,
-                    label: "Yıl",
-                  }
-                }
+                value={licensePackagesData.selectedTimeId}
                 options={TimeIds}
                 onChange={(selectedOption) => {
                   setLicensePackagesData((prev) => {
@@ -232,7 +233,7 @@ function EditLicensePackagePopup({ data, onSuccess }) {
               />
             </div>
 
-            <div className="flex max-sm:flex-col sm:gap-4 sm:w-1/2">
+            <div className="flex max-sm:flex-col sm:gap-4">
               <CustomSelect
                 type="Durum"
                 label="Durum"
@@ -250,6 +251,24 @@ function EditLicensePackagePopup({ data, onSuccess }) {
                     return {
                       ...prev,
                       isActive: selectedOption.value,
+                    };
+                  });
+                }}
+              />
+
+              <CustomSelect
+                type="Lisans Türü"
+                label="Lisans Türü"
+                value={LicensePackagesType.find(
+                  (option) =>
+                    option.value === licensePackagesData.licensePackageType,
+                )}
+                options={LicensePackagesType}
+                onChange={(selectedOption) => {
+                  setLicensePackagesData((prev) => {
+                    return {
+                      ...prev,
+                      licensePackageType: selectedOption.value,
                     };
                   });
                 }}
