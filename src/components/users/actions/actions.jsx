@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import MenuI from "../../../assets/icon/menu";
 import DeleteUser from "./deleteUser";
 import EditUser from "./editUser/editUser";
+import AssignRoles from "./assignRoles";
 import UpdateUserIsDealer from "./updateUserIsDealer";
 import TransferDealer from "./transferDealer";
 import UserLicenses from "./userLicenses";
@@ -54,6 +55,11 @@ const Actions = ({ index, user, itemsPerPage, onSuccess }) => {
             onSuccess={onSuccess}
           />
           <TransferDealer
+            user={user}
+            setOpenMenu={setOpenMenu}
+            onSuccess={onSuccess}
+          />
+          <AssignRoles
             user={user}
             setOpenMenu={setOpenMenu}
             onSuccess={onSuccess}

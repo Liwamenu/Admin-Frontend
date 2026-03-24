@@ -14,43 +14,28 @@ import { formatEmail, formatSelectorData } from "../../../utils/utils";
 
 //REDUX
 import { useDispatch, useSelector } from "react-redux";
-import { getCities } from "../../../redux/data/getCitiesSlice";
-import { getNeighs } from "../../../redux/data/getNeighsSlice";
 import { getDealers } from "../../../redux/users/getUsersSlice";
-import { getDistricts } from "../../../redux/data/getDistrictsSlice";
 import { addUser, resetaddUserState } from "../../../redux/users/addUserSlice";
+import { getRoles } from "../../../redux/roles/getRolesSlice";
 
 const AddUser = ({ onSuccess }) => {
   const dispatch = useDispatch();
   const formRef = useRef();
   const toastId = useRef();
-  const dispatcher = useRef();
 
   const { setPopupContent } = usePopup();
 
   const { loading, success, error } = useSelector(
-    (state) => state.users.addUser
+    (state) => state.users.addUser,
   );
 
   const { dealers: dealersData } = useSelector((state) => state.users.getUsers);
-
-  const { cities: citiesData, success: citiesSuccess } = useSelector(
-    (state) => state.data.getCities
-  );
-  const { districts: districtsData, success: districtsSuccess } = useSelector(
-    (state) => state.data.getDistricts
-  );
-  const { neighs: neighsData, success: neighsSuccess } = useSelector(
-    (state) => state.data.getNeighs
-  );
+  const { roles: rolesData } = useSelector((state) => state.getRoles);
 
   const [openFatura, setOpenFatura] = useState(false);
 
-  const [cities, setCities] = useState([]);
-  const [userDistricts, setUserDistricts] = useState([]);
-  const [invoiceDistricts, setInvoiceDistricts] = useState([]);
-  const [neighs, setNeighs] = useState([]);
   const [dealers, setDealers] = useState([]);
+  const [roles, setRoles] = useState([{ value: "User", label: "Normal User" }]);
   const [sendSMSNotify, setSendSMSNotify] = useState(false);
   const [sendEmailNotify, setSendEmailNotify] = useState(false);
 
@@ -62,8 +47,7 @@ const AddUser = ({ onSuccess }) => {
     password: "",
     confirmPassword: "",
     dealerId: null,
-    city: null,
-    district: null,
+    role: { value: "User", label: "Normal User" },
   });
 
   const [userInvoice, setUserInvoice] = useState({
@@ -71,9 +55,6 @@ const AddUser = ({ onSuccess }) => {
     taxNumber: "",
     title: "",
     address: "",
-    city: null,
-    district: null,
-    neighbourhood: null,
     tradeRegistryNumber: "",
     mersisNumber: "",
   });
@@ -91,28 +72,23 @@ const AddUser = ({ onSuccess }) => {
         addUser({
           ...userData,
           dealerId: userData.dealerId.value,
-          city: userData.city.value,
-          district: userData.district.value,
+          roles: [userData.role?.value || "User"],
           sendSMSNotify,
           sendEmailNotify,
           userInvoiceAddressDTO: {
             ...userInvoice,
-            city: userInvoice.city.value,
-            district: userInvoice.district.value,
-            neighbourhood: userInvoice.neighbourhood.value,
           },
-        })
+        }),
       );
     } else {
       dispatch(
         addUser({
           ...userData,
           dealerId: userData.dealerId.value,
-          city: userData.city.value,
-          district: userData.district.value,
+          roles: [userData.role?.value || "User"],
           sendSMSNotify,
           sendEmailNotify,
-        })
+        }),
       );
     }
   };
@@ -137,23 +113,13 @@ const AddUser = ({ onSuccess }) => {
     }
   }, [loading, success, error]);
 
-  // GET CITIES
-  useEffect(() => {
-    if (!citiesData) {
-      dispatch(getCities());
-    }
-    if (citiesSuccess) {
-      setCities(citiesData);
-    }
-  }, [citiesData, citiesSuccess]);
-
   // GET DEALERS
   useEffect(() => {
     if (!dealersData) {
       dispatch(getDealers({ dealer: true }));
     } else {
       const liwaSoft = dealersData.filter(
-        (dealer) => dealer.email === "pentegrasyon@liwasoft.com"
+        (dealer) => dealer.email === "pentegrasyon@liwasoft.com",
       )[0];
       if (liwaSoft) {
         setUserData({
@@ -175,69 +141,26 @@ const AddUser = ({ onSuccess }) => {
     // };
   }, [dealersData, dispatch]);
 
-  // GET DISTRICTS WHENEVER USERDATA CITY CHANGES
+  // GET ROLES
   useEffect(() => {
-    if (userData.city?.id) {
-      dispatch(getDistricts({ cityId: userData.city.id }));
-      dispatcher.current = "userData";
-      setUserData((prev) => {
-        return {
-          ...prev,
-          district: null,
-        };
-      });
+    if (!rolesData) {
+      dispatch(getRoles());
+      return;
     }
-  }, [userData.city]);
 
-  // GET DISTRICTS WHENEVER USERINVOICE CITY CHANGES
-  useEffect(() => {
-    if (userInvoice.city?.id) {
-      dispatch(getDistricts({ cityId: userInvoice.city.id }));
-      dispatcher.current = "userInvoice";
-      setUserInvoice((prev) => {
-        return {
-          ...prev,
-          district: null,
-        };
-      });
-    }
-  }, [userInvoice.city]);
+    const apiRoles = (rolesData?.data || []).map((role) => ({
+      value: role.role,
+      label: role.role,
+      id: role.id,
+    }));
 
-  // SET DISTRICTS ACCORDING TO USER OR INVOICE
-  useEffect(() => {
-    if (districtsSuccess) {
-      if (dispatcher.current === "userData") {
-        setUserDistricts(districtsData);
-      } else {
-        setInvoiceDistricts(districtsData);
-      }
-    }
-  }, [districtsSuccess]);
+    const hasNormalUser = apiRoles.some((role) => role.value === "User");
+    const formattedRoles = hasNormalUser
+      ? apiRoles
+      : [{ value: "User", label: "Normal User" }, ...apiRoles];
 
-  // GET NEIGHS
-  useEffect(() => {
-    if (userInvoice.district?.id && userInvoice.city?.id) {
-      dispatch(
-        getNeighs({
-          cityId: userInvoice.city.id,
-          districtId: userInvoice.district.id,
-        })
-      );
-      setUserInvoice((prev) => {
-        return {
-          ...prev,
-          neighbourhood: null,
-        };
-      });
-    }
-  }, [userInvoice.district]);
-
-  // SET NEIGHS
-  useEffect(() => {
-    if (neighsSuccess) {
-      setNeighs(neighsData);
-    }
-  }, [neighsSuccess]);
+    setRoles(formattedRoles);
+  }, [rolesData, dispatch]);
 
   return (
     <div className="w-full pt-12 pb-8 bg-[--white-1] rounded-lg border-2 border-solid border-[--border-1] text-[--black-2] text-base max-h-[95dvh] overflow-y-auto">
@@ -322,54 +245,6 @@ const AddUser = ({ onSuccess }) => {
               </div>
 
               <div className="flex gap-4">
-                <CustomSelect
-                  required={true}
-                  label="Şehir"
-                  placeholder="Ad"
-                  style={{ padding: "1px 0px" }}
-                  className="text-sm"
-                  options={[{ value: null, label: "Şehir seç" }, ...cities]}
-                  value={
-                    userData.city
-                      ? userData.city
-                      : { value: null, label: "Şehir seç" }
-                  }
-                  onChange={(selectedOption) => {
-                    setUserData((prev) => {
-                      return {
-                        ...prev,
-                        city: selectedOption,
-                      };
-                    });
-                  }}
-                />
-                <CustomSelect
-                  required={true}
-                  label="İlçe"
-                  placeholder="Ad"
-                  style={{ padding: "1px 0px" }}
-                  className="text-sm"
-                  value={
-                    userData.district
-                      ? userData.district
-                      : { value: null, label: "İlçe seç" }
-                  }
-                  options={[
-                    { value: null, label: "İlçe seç" },
-                    ...userDistricts,
-                  ]}
-                  onChange={(selectedOption) => {
-                    setUserData((prev) => {
-                      return {
-                        ...prev,
-                        district: selectedOption,
-                      };
-                    });
-                  }}
-                />
-              </div>
-
-              <div className="flex gap-4">
                 <CustomInput
                   required={true}
                   label="Şifre"
@@ -404,7 +279,7 @@ const AddUser = ({ onSuccess }) => {
                 />
               </div>
 
-              <div className="flex gap-4 w-1/2">
+              <div className="flex gap-4">
                 <CustomSelect
                   required={true}
                   label="Bayi"
@@ -422,6 +297,28 @@ const AddUser = ({ onSuccess }) => {
                       return {
                         ...prev,
                         dealerId: selectedOption,
+                      };
+                    });
+                  }}
+                />
+
+                <CustomSelect
+                  required={true}
+                  label="Rol"
+                  placeholder="Rol seçiniz"
+                  style={{ padding: "1px 0px" }}
+                  className="text-sm"
+                  options={roles}
+                  value={
+                    userData.role
+                      ? userData.role
+                      : { value: "User", label: "Normal User" }
+                  }
+                  onChange={(selectedOption) => {
+                    setUserData((prev) => {
+                      return {
+                        ...prev,
+                        role: selectedOption,
                       };
                     });
                   }}
@@ -540,74 +437,6 @@ const AddUser = ({ onSuccess }) => {
                     />
                   </div>
                   <div className="flex gap-4">
-                    <CustomSelect
-                      required={true}
-                      label="Şehir"
-                      style={{ padding: "1px 0px", fontSize: ".8rem" }}
-                      className="text-sm"
-                      options={[{ value: null, label: "Şehir seç" }, ...cities]}
-                      value={
-                        userInvoice.city
-                          ? userInvoice.city
-                          : { value: null, label: "Şehir seç" }
-                      }
-                      onChange={(selectedOption) => {
-                        setUserInvoice((prev) => {
-                          return {
-                            ...prev,
-                            city: selectedOption,
-                          };
-                        });
-                      }}
-                    />
-                    <CustomSelect
-                      required={true}
-                      label="İlçe"
-                      style={{ padding: "1px 0px", fontSize: ".8rem" }}
-                      className="text-sm"
-                      options={[
-                        { value: null, label: "İlçe seç" },
-                        ...invoiceDistricts,
-                      ]}
-                      value={
-                        userInvoice.district
-                          ? userInvoice.district
-                          : { value: null, label: "İlçe seç" }
-                      }
-                      onChange={(selectedOption) => {
-                        setUserInvoice((prev) => {
-                          return {
-                            ...prev,
-                            district: selectedOption,
-                          };
-                        });
-                      }}
-                    />
-                  </div>
-                  <div className="flex gap-4">
-                    <CustomSelect
-                      required={true}
-                      label="Mahalle"
-                      style={{ padding: "1px 0px", fontSize: ".8rem" }}
-                      className="text-sm"
-                      options={[
-                        { value: null, label: "Mahalle Seç" },
-                        ...neighs,
-                      ]}
-                      value={
-                        userInvoice.neighbourhood
-                          ? userInvoice.neighbourhood
-                          : { value: null, label: "Mahalle Seç" }
-                      }
-                      onChange={(selectedOption) => {
-                        setUserInvoice((prev) => {
-                          return {
-                            ...prev,
-                            neighbourhood: selectedOption,
-                          };
-                        });
-                      }}
-                    />
                     <CustomTextarea
                       required={true}
                       label="Adres"

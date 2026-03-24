@@ -11,7 +11,6 @@ import { usePopup } from "../../../../context/PopupContext";
 import ActionButton from "../../../common/actionButton";
 import CustomInput from "../../../common/customInput";
 import CustomSelect from "../../../common/customSelector";
-import CustomCheckbox from "../../../common/customCheckbox";
 import CustomPhoneInput from "../../../common/customPhoneInput";
 
 //FUNC
@@ -22,8 +21,7 @@ import {
   resetUpdateUser,
   updateUserData,
 } from "../../../../redux/users/updateUserDataByIdSlice";
-import { getCities } from "../../../../redux/data/getCitiesSlice";
-import { getDistricts } from "../../../../redux/data/getDistrictsSlice";
+import { getRoles } from "../../../../redux/roles/getRolesSlice";
 
 const EditUser = ({ user, onSuccess }) => {
   const { setPopupContent } = usePopup();
@@ -48,12 +46,11 @@ const EditUserPopup = ({ user, onSuccess }) => {
   const { setPopupContent } = usePopup();
 
   const { loading, success, error } = useSelector(
-    (state) => state.users.updateUser
+    (state) => state.users.updateUser,
   );
-  const { cities: citiesData } = useSelector((state) => state.data.getCities);
-  const { districts: districtsData, success: districtsSuccess } = useSelector(
-    (state) => state.data.getDistricts
-  );
+  const { roles: rolesData } = useSelector((state) => state.getRoles);
+
+  const initialRole = user.roles?.[0] || user.role || "User";
 
   const initialData = {
     id: user.id,
@@ -63,19 +60,16 @@ const EditUserPopup = ({ user, onSuccess }) => {
     phoneNumber: "9" + user.phoneNumber,
     firstName: user.firstName,
     lastName: user.lastName,
-    city: {
-      value: user.city,
-      label: user.city,
-      id: null,
+    role: {
+      value: initialRole,
+      label: initialRole === "User" ? "Normal User" : initialRole,
     },
-    district: { value: user.district, label: user.district, id: null },
     checked: false,
   };
 
-  const [districts, setDistricts] = useState([]);
   const [userDataBefore, setUserDataBefore] = useState(initialData);
   const [userData, setUserData] = useState(initialData);
-  const [cities, setCities] = useState([]);
+  const [roles, setRoles] = useState([{ value: "User", label: "Normal User" }]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -87,69 +81,33 @@ const EditUserPopup = ({ user, onSuccess }) => {
       dispatch(
         updateUserData({
           ...userData,
-          city: userData?.city?.value,
-          district: userData?.district?.value,
+          roles: [userData.role?.value || "User"],
           phoneNumber: userData.phoneNumber.slice(1),
-        })
+        }),
       );
     }
   };
 
-  // GET AND SET CITIES IF THERE IS NO CITIES
+  // GET ROLES
   useEffect(() => {
-    citiesData ? setCities(citiesData) : dispatch(getCities());
-  }, [citiesData]);
-
-  // GET DISTRICTS WHENEVER USER'S CITY CHANGES
-  useEffect(() => {
-    if (userData.city?.id) {
-      dispatch(getDistricts({ cityId: userData.city.id }));
-      setUserData((prev) => {
-        return {
-          ...prev,
-          district: null,
-        };
-      });
-    } else if (userData.city?.label) {
-      if (cities.length > 0) {
-        const cityId = cities.filter(
-          (city) =>
-            city.label.toLowerCase() === userData.city.label.toLowerCase()
-        )[0]?.id;
-        if (cityId) {
-          dispatch(getDistricts({ cityId: cityId }));
-        }
-      }
+    if (!rolesData) {
+      dispatch(getRoles());
+      return;
     }
-  }, [userData.city]);
 
-  // SET DISTRICTS ACCORDING TO USER OR INVOICE
-  useEffect(() => {
-    if (districtsSuccess) {
-      setDistricts(districtsData);
-      // to set the district id in the first landing
-      if (!userData.district || !userData.district?.id) {
-        const district = districtsData.filter(
-          (dist) =>
-            dist?.label.toLowerCase() === userData.district?.label.toLowerCase()
-        )[0];
-        if (district) {
-          setUserDataBefore((prev) => {
-            return {
-              ...prev,
-              district,
-            };
-          });
-          setUserData((prev) => {
-            return {
-              ...prev,
-              district,
-            };
-          });
-        }
-      }
-    }
-  }, [districtsSuccess]);
+    const apiRoles = (rolesData?.data || []).map((role) => ({
+      value: role.role,
+      label: role.role,
+      id: role.id,
+    }));
+
+    const hasNormalUser = apiRoles.some((role) => role.value === "User");
+    const formattedRoles = hasNormalUser
+      ? apiRoles
+      : [{ value: "User", label: "Normal User" }, ...apiRoles];
+
+    setRoles(formattedRoles);
+  }, [rolesData, dispatch]);
 
   //TOAST
   useEffect(() => {
@@ -262,42 +220,21 @@ const EditUserPopup = ({ user, onSuccess }) => {
               <div className="flex gap-4 max-sm:flex-col">
                 <CustomSelect
                   required={true}
-                  label="Şehir"
-                  placeholder="Ad"
+                  label="Rol"
+                  placeholder="Rol seç"
                   style={{ padding: "1px 0px" }}
                   className="text-sm"
                   value={
-                    userData.city
-                      ? userData.city
-                      : { value: null, label: "Şehir seç" }
+                    userData.role
+                      ? userData.role
+                      : { value: "User", label: "Normal User" }
                   }
-                  options={[{ value: null, label: "Şehir seç" }, ...cities]}
+                  options={roles}
                   onChange={(selectedOption) => {
                     setUserData((prev) => {
                       return {
                         ...prev,
-                        city: selectedOption,
-                      };
-                    });
-                  }}
-                />
-                <CustomSelect
-                  required={true}
-                  label="İlçe"
-                  placeholder="Ad"
-                  style={{ padding: "1px 0px" }}
-                  className="text-sm"
-                  value={
-                    userData.district
-                      ? userData.district
-                      : { value: null, label: "İlçe seç" }
-                  }
-                  options={[{ value: null, label: "İlçe seç" }, ...districts]}
-                  onChange={(selectedOption) => {
-                    setUserData((prev) => {
-                      return {
-                        ...prev,
-                        district: selectedOption,
+                        role: selectedOption,
                       };
                     });
                   }}

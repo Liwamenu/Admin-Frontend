@@ -21,7 +21,6 @@ import {
   TemplatesI,
   DebitI,
   WaitI,
-  ManagerI,
   TempUsersI,
 } from "../../assets/icon/index";
 
@@ -86,12 +85,6 @@ function Sidebar({ openSidebar, setOpenSidebar }) {
       text: "Roller",
       to: "/roles",
       path: "roles",
-    },
-    {
-      icon: <ManagerI />,
-      text: "Yetkililer",
-      to: "/managers",
-      path: "managers",
     },
     {
       icon: <PaymentI />,

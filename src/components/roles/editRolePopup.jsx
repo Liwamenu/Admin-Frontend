@@ -164,7 +164,7 @@ const EditRolePopup = ({ roleData: initialRoleData }) => {
                               e.target.checked,
                             )
                           }
-                          size="4"
+                          size=" size-4"
                           className2="text-xs text-[--black-2]"
                         />
                       </div>

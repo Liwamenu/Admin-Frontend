@@ -28,7 +28,6 @@ const UsersTable = ({ users, itemsPerPage, onSuccess }) => {
               <th className="pl-4 font-normal">Ad Soyad</th>
               <th className="font-normal">Rol</th>
               <th className="font-normal">iletişim</th>
-              <th className="font-normal">İl</th>
               <th className="font-normal">Durum</th>
               <th className="font-normal text-center">Onaylı</th>
               <th className="font-normal">Kayıt Tarihi</th>
@@ -54,7 +53,7 @@ const UsersTable = ({ users, itemsPerPage, onSuccess }) => {
                   onClick={() => handleClick(data)}
                   className="whitespace-nowrap text-[--black-2] font-light cursor-pointer"
                 >
-                  {data.isDealer ? "Bayi" : "Musteri"}
+                  {data.role}
                 </td>
                 <td className="whitespace-nowrap text-[--black-2] font-light cursor-pointer">
                   <div className="flex items-center justify-between pr-3 ">
@@ -94,12 +93,7 @@ const UsersTable = ({ users, itemsPerPage, onSuccess }) => {
                     </div> */}
                   </div>
                 </td>
-                <td
-                  onClick={() => handleClick(data)}
-                  className="whitespace-nowrap text-[--black-2] font-light cursor-pointer"
-                >
-                  {data.city}
-                </td>
+
                 <td className="whitespace-nowrap text-[--black-2] font-light relative">
                   <ChangeUsersStatus user={data} onSuccess={onSuccess} />
                 </td>
@@ -110,7 +104,7 @@ const UsersTable = ({ users, itemsPerPage, onSuccess }) => {
                   onClick={() => handleClick(data)}
                   className="whitespace-nowrap text-[--black-2] font-light cursor-pointer"
                 >
-                  {formatDateString(data.createdDateTime)}
+                  {formatDateString({ dateString: data.createdDateTime })}
                 </td>
                 <td className="w-14 text-[--black-2] font-light relative">
                   <Actions

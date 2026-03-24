@@ -17,6 +17,7 @@ import cartSlice from "./redux/cart/cartSlice";
 // import dashboardSlice from "./redux/dashboard";
 // import messagesSlice from "./redux/messages";
 import paymentsSlice from "./redux/payments";
+import parametersSlice from "./redux/parameters";
 // import getirYemekSlice from "./redux/getirYemek";
 // import integrationInformationsSlice from "./redux/informations";
 // import managersSlice from "./redux/managers";
@@ -27,6 +28,7 @@ import getPermissionsReducer from "./redux/roles/getPermissionsSlice";
 import createRoleReducer from "./redux/roles/createRoleSlice";
 import updateRoleReducer from "./redux/roles/updateRoleSlice";
 import deleteRoleReducer from "./redux/roles/deleteRoleSlice";
+import assignUserRolesReducer from "./redux/roles/assignUserRolesSlice";
 // import emailSlice from "./redux/email";
 // import smsSlice from "./redux/sms";
 // import tempUsersSlice from "./redux/tempUsers";
@@ -50,6 +52,7 @@ const store = configureStore({
     // dashboard: dashboardSlice,
     // messages: messagesSlice,
     payments: paymentsSlice,
+    parameters: parametersSlice,
     // getirYemek: getirYemekSlice,
     // integrationInfos: integrationInformationsSlice,
     // managers: managersSlice,
@@ -60,6 +63,7 @@ const store = configureStore({
     createRole: createRoleReducer,
     updateRole: updateRoleReducer,
     deleteRole: deleteRoleReducer,
+    assignUserRoles: assignUserRolesReducer,
     // sms: smsSlice,
   },
   middleware: (getDefaultMiddleware) =>

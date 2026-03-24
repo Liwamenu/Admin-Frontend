@@ -14,7 +14,7 @@ import Roles from "./roles";
 // import DashboardPage from "./dashboard";
 import Restourants from "./restourants";
 import Licenses from "./licenses";
-// import Parameters from "./parameters";
+import Parameters from "./parameters";
 import LicensePackages from "./licensePackages";
 import Profile from "./profile";
 // import Messages from "./messages";
@@ -40,12 +40,12 @@ const Home = () => {
         <Route path="/payments/*" element={<Payments />} />
         <Route path="/profile/*" element={<Profile />} />
         <Route path="/roles/*" element={<Roles />} />
+        <Route path="/parameters/*" element={<Parameters />} />
         {/*
         <Route path="/*" element={<DashboardPage />} />
         <Route path="/dashboard/*" element={<DashboardPage />} />
         <Route path="/temp-users/*" element={<TempUsers />} />
         <Route path="/accounts/*" element={<Accounts />} />
-        <Route path="/parameters/*" element={<Parameters />} />
         <Route path="/messages/*" element={<Messages />} />
         <Route path="/templates/*" element={<Templates />} />
         <Route path="/ys-mail-waiters" element={<MailWaiters />} />

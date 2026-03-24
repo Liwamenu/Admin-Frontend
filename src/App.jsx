@@ -6,7 +6,6 @@ import Home from "./pages/home";
 import Login from "./pages/login";
 import NotFound from "./pages/404";
 // import Verify from "./pages/verify";
-import Register from "./pages/register";
 import Popup from "./components/common/popup";
 // import PaymentFailed from "./pages/paymentFailed";
 // import PrivacyPolicy from "./pages/privacyPolicy";
@@ -28,7 +27,6 @@ function App() {
       <Popup />
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
         {/*  <Route path="/setNewPassword" element={<SetNewPassword />} />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
           <Route path="/verify" element={<Verify />} />
