@@ -8,6 +8,7 @@ import ActionButton from "../../common/actionButton";
 import { CancelI, EyeI } from "../../../assets/icon";
 import { formatToPrice } from "../../../utils/utils";
 import paymentType from "../../../enums/paymentLicenseType";
+import LicensePackagesType from "../../../enums/licensePackagesType";
 
 //UTILS
 
@@ -58,22 +59,15 @@ function ShowBasketPopup({ payment }) {
               <div className="flex flex-col gap-2 mt-4">
                 <div className="flex gap-4">
                   <p>Restoran ID:</p>
-                  <p className="text-[--link-1]">{basket.restaurantId}</p>
-                </div>
-
-                <div className="flex gap-4">
-                  <p>Paket ID:</p>
-                  {basket.licensePackageIds.map((id) => (
-                    <p className="text-[--link-1]">{id}</p>
-                  ))}
+                  <p className="text-[--link-1]">{basket.RestaurantId}</p>
                 </div>
                 <div className="flex gap-4">
                   <p>Restoran Adı:</p>
-                  <p className="text-[--link-1]">{payment.restaurantName}</p>
+                  <p className="text-[--link-1]">{basket.RestaurantName}</p>
                 </div>
                 <div className="flex gap-4">
                   <p>Kullanıcı Adı:</p>
-                  <p className="text-[--link-1]">{payment.userName}</p>
+                  <p className="text-[--link-1]">{basket.Username}</p>
                 </div>
               </div>
               {basket?.Licenses?.length > 0 ? (
@@ -100,7 +94,7 @@ function ShowBasketPopup({ payment }) {
                               scope="col"
                               className="px-3 py-3 text-left text-xs font-medium text-[--gr-1] uppercase tracking-wider"
                             >
-                              Süre (Yıl)
+                              Süre
                             </th>
                             <th
                               scope="col"
@@ -117,10 +111,16 @@ function ShowBasketPopup({ payment }) {
                                 {license.LicensePackageName}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-[--gr-1]">
-                                {paymentType[license.LicensePackageTypeId]?.tr}
+                                {
+                                  LicensePackagesType.find(
+                                    (type) =>
+                                      type.value === license.LicensePackageType,
+                                  )?.label
+                                }
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-[--gr-1]">
-                                {license.LicensePackageTime}
+                                {license.LicensePackageTime}{" "}
+                                {license?.LicenseTimeId === 0 ? "Ay" : "Yıl"}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-[--gr-1]">
                                 {formatToPrice(
