@@ -11,7 +11,7 @@ import NotFound from "./404";
 import TestPage from "./test";
 import Users from "./users";
 import Roles from "./roles";
-// import DashboardPage from "./dashboard";
+import DashboardPage from "./dashboard";
 import Restourants from "./restourants";
 import Licenses from "./licenses";
 import Parameters from "./parameters";
@@ -41,9 +41,9 @@ const Home = () => {
         <Route path="/profile/*" element={<Profile />} />
         <Route path="/roles/*" element={<Roles />} />
         <Route path="/parameters/*" element={<Parameters />} />
+        <Route path="/dashboard/*" element={<DashboardPage />} />
         {/*
         <Route path="/*" element={<DashboardPage />} />
-        <Route path="/dashboard/*" element={<DashboardPage />} />
         <Route path="/temp-users/*" element={<TempUsers />} />
         <Route path="/accounts/*" element={<Accounts />} />
         <Route path="/messages/*" element={<Messages />} />

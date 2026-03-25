@@ -18,6 +18,7 @@ import cartSlice from "./redux/cart/cartSlice";
 // import messagesSlice from "./redux/messages";
 import paymentsSlice from "./redux/payments";
 import parametersSlice from "./redux/parameters";
+import statisticsSlice from "./redux/statistics";
 // import getirYemekSlice from "./redux/getirYemek";
 // import integrationInformationsSlice from "./redux/informations";
 // import managersSlice from "./redux/managers";
@@ -53,6 +54,7 @@ const store = configureStore({
     // messages: messagesSlice,
     payments: paymentsSlice,
     parameters: parametersSlice,
+    statistics: statisticsSlice,
     // getirYemek: getirYemekSlice,
     // integrationInfos: integrationInformationsSlice,
     // managers: managersSlice,
