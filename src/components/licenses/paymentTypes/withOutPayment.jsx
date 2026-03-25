@@ -108,11 +108,13 @@ const WithOutPayment = ({
     }, []);
 
     const { licensePackageId, restaurantId } = cartItems[0];
-    const extendLicenseBasket = {
-      licensePackageId,
-      restaurantId,
-      licenseId: currentLicense?.id,
-    };
+    const extendLicenseBasket = [
+      {
+        licensePackageIds: [licensePackageId],
+        restaurantId,
+        licenseId: currentLicense?.id,
+      },
+    ];
 
     // Create a FormData object
     const formData = new FormData();
