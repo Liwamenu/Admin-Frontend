@@ -1,6 +1,6 @@
 //MODULES
 import { useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 //COMP
 import Header from "../components/header/header";
